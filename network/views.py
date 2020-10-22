@@ -1,8 +1,10 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
+from django.http.response import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import User
 
@@ -34,6 +36,14 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
+
+@csrf_exempt
+def new_post(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': "Post request Needed"}, 400)
+    print(request.body)
+    # object is passed here, add it to the database.
+    return HttpResponse("It is a peace")
 
 
 def register(request):

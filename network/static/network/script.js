@@ -29,17 +29,24 @@ class Post extends React.Component {
     }
 }
 
-function toggleNewPost() {
-    document.querySelector('#all-posts-container').style.display = 'none';
-} 
+initiateElements();
 
-
-let postData = {
-    username: 'Jeevan',
-    content: "Just landed in Maldives, this place is amazing!",
+function initiateElements() {
+    //loadPosts();
+    let newPostButton = document.querySelector('#submit-new-post');
+    newPostButton.addEventListener('click', createNewPost);
 }
 
-let newPostButton = document.querySelector('#new-post-button');
-newPostButton.addEventListener('click', toggleNewPost);
+function loadPosts() {
+    // fetch get post
+    //display posts.
+}
 
-ReactDOM.render(<Post postData={postData}/>, document.querySelector('#all-posts-container'));
+function createNewPost() {
+    fetch('/new_post', {
+        method: 'POST', 
+        body: JSON.stringify({
+            content: document.querySelector('#new-post-content').value
+        })
+    })
+}
