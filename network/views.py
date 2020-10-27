@@ -1,5 +1,6 @@
 import json
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http.response import JsonResponse
@@ -9,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .models import User, Post
 
-
+@login_required(login_url='/login')
 def index(request):
     return render(request, "network/index.html")
 
@@ -46,16 +47,21 @@ def logout_view(request):
     return HttpResponseRedirect(reverse("index"))
 
 @csrf_exempt
-def new_post(request):
-    if request.method != 'POST':
-        return JsonResponse({'error': "Post request Needed"}, 400)
-    print(request.body)
-   
+def new_post(request, post_id):
+
     data = json.loads(request.body)
     content = data.get("content")
-    user = User.objects.get(username=request.user)
-    Post.objects.create(user=user, content=content)
-    return HttpResponse("It is a peace")
+    if request.method == 'PUT':
+        post = Post.objects.get(id=post_id)
+        post.content = content
+        post.save()
+        return HttpResponse("It is a put")
+    elif request.method == 'POST':
+        user = User.objects.get(username=request.user)
+        Post.objects.create(user=user, content=content)
+        return HttpResponse("It is a peace")
+    else:
+        return JsonResponse({'error': "Request must be PUT or POST"}, 400)
 
 
 def register(request):

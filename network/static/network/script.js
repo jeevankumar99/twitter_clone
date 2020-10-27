@@ -1,3 +1,4 @@
+let post_id = 0;
 
 class UserDiv extends React.Component {
     render () {
@@ -21,13 +22,22 @@ class Post extends React.Component {
             likes: state.likes + 1
         }));
     }
+    editPost = () => {
+       document.querySelector('#all-posts-container').style.display = 'none';
+       document.querySelector('#post-type').innerHTML = "Edit Post";
+       document.querySelector('#new-post-content').value = this.props.postData.content;
+       document.querySelector('#submit-new-post').style.display = 'none';
+       document.querySelector('#submit-edit-post').style.display = 'block';
+       post_id = this.props.postData.id;
+       console.log('editPost working!') 
+    }
 
     render () {
-        console.log(this.props.postData);
         return (
             <div className="post-container">
                 <UserDiv username={this.props.postData.username}/>
                 <p>{this.props.postData.timestamp}</p>
+                <button  onClick={this.editPost} id='edit-button' style={{ display: this.props.postData.displayState}}>Edit</button>
                 <div className="post-contents">
                     <h4>{this.props.postData.content}</h4>
                 </div>
@@ -42,26 +52,39 @@ initiateElements();
 
 function initiateElements() {
     loadPosts();
+    let editPostButton = document.querySelector('#submit-edit-post');
+    editPostButton.addEventListener('click', () => createNewPost('PUT'));
     let newPostButton = document.querySelector('#submit-new-post');
-    newPostButton.addEventListener('click', createNewPost);
+    newPostButton.addEventListener('click', () => createNewPost('POST'));
 }
 
 function loadPosts() {
+    document.querySelector('#all-posts-container').style.display = 'block';
+    document.querySelector('#submit-edit-post').style.display = 'none';
+    document.querySelector('#submit-new-post').style.display = 'block';
+    document.querySelector('#post-type').innerHTML = "New Post";
+    document.querySelector('#new-post-content').value = "Write Something...";
     fetch('/get_posts')
     .then(response => response.json())
     .then(data => {
-        console.log(data);
         data.forEach(post => {
             const post_div = document.createElement('div');
+            const user_id = document.querySelector('#user-id');
+            post.displayState= "none";
+            if (post.username == user_id.innerHTML) {
+                post.displayState = "block";
+            }
+            post.currentUser = user_id.innerHTML;
             ReactDOM.render(<Post postData={post}/>, post_div);
             document.querySelector('#all-posts-container').appendChild(post_div);
         });
     });
 }
 
-function createNewPost() {
-    fetch('/new_post', {
-        method: 'POST', 
+function createNewPost(type) {
+    console.log('createNewPost working!', type)
+    fetch(`/new_post/${post_id}`, {
+        method: type, 
         body: JSON.stringify({
             content: document.querySelector('#new-post-content').value
         })
