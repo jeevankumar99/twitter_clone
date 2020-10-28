@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import User, Post
+from .models import User, Post, Follower
 
 @login_required(login_url='/login')
 def index(request):
@@ -18,8 +18,16 @@ def get_posts(request):
     posts = Post.objects.all()
     posts = posts.order_by('-timestamp').all()
     json_posts = JsonResponse([post.serialize() for post in posts], safe=False)
-    print (json_posts)
     return json_posts
+
+
+def get_follower_info(request, username):
+    user = User.objects.get(username=username)
+    followers = Follower.objects.filter(user=user)
+    print(followers)
+
+    json_followers = JsonResponse([follower_obj.serialize() for follower_obj in followers], safe=False)
+    return json_followers
 
 
 def login_view(request):
@@ -47,7 +55,7 @@ def logout_view(request):
     return HttpResponseRedirect(reverse("index"))
 
 @csrf_exempt
-def new_post(request, post_id):
+def create_and_update_posts(request, post_id):
 
     # get data from request
     data = json.loads(request.body)
