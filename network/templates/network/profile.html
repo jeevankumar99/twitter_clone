@@ -1,0 +1,20 @@
+{% extends "network/layout.html" %}
+
+{% load static %}
+
+{% block script %}
+    <script type="text/babel" src="{% static 'network/profile.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+    <div id="user-info-div" style="display: none">
+        <p id="username">{{ username }}</p>
+        <p id="followers">{{ followers }}</p>
+        <p id="following">{{ following }}</p>
+    </div>
+    <div id="profile-username">
+        <h2>{{ username }}</h2>
+    </div>
+    <div id="followers-info"></div>
+    <div id="follow-buttons"></div>
+{% endblock %}

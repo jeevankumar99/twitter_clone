@@ -49,20 +49,38 @@ def logout_view(request):
 @csrf_exempt
 def new_post(request, post_id):
 
+    # get data from request
     data = json.loads(request.body)
     content = data.get("content")
+    likes = data.get("likes")
+    
+    # edit existing post
     if request.method == 'PUT':
         post = Post.objects.get(id=post_id)
-        post.content = content
+        if likes != None:
+            print ("it is working", likes)
+            post.likes = likes
+        else:
+            post.content = content
         post.save()
-        return HttpResponse("It is a put")
+        return HttpResponse("Post Edited!")
+    
+    # create post
     elif request.method == 'POST':
         user = User.objects.get(username=request.user)
         Post.objects.create(user=user, content=content)
-        return HttpResponse("It is a peace")
+        return HttpResponse("Post Created!")
+    
     else:
         return JsonResponse({'error': "Request must be PUT or POST"}, 400)
 
+def profile_page(request, username):
+    user = User.objects.get(username=username)
+    return render(request, "network/profile.html", {
+        'username': user.username,
+        'followers': None, #pass followers model
+        'following': None,  #pass following model
+    })
 
 def register(request):
     if request.method == "POST":

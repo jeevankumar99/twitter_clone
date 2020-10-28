@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.deletion import CASCADE
 from django.utils.timezone import now
 
 
@@ -21,5 +22,10 @@ class Post(models.Model):
             'likes': self.likes,
             'timestamp': self.timestamp.strftime("%m/%d/%Y, %H:%M:%S")
         }
+
+class Follower(models.Model):
+    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name="followed_user")
+    follower = models.ForeignKey('User', on_delete=models.DO_NOTHING, related_name="follower")
+
 
 

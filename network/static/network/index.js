@@ -4,7 +4,7 @@ class UserDiv extends React.Component {
     render () {
         return (
             <div className="post-username">
-            <h5>{this.props.username} Posted</h5>
+            <h5><a href={"/profiles/" + this.props.username}> {this.props.username} Posted</a></h5>
             </div>
         )
     }
@@ -14,13 +14,19 @@ class Post extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            likes: 0
+            likes: this.props.postData.likes
         }
     };  
     incrementLike = () => {
         this.setState(state => ({
             likes: state.likes + 1
         }));
+        fetch(`/new_post/${this.props.postData.id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                likes: this.state.likes + 1              
+            })
+        })
     }
     editPost = () => {
        document.querySelector('#all-posts-container').style.display = 'none';
