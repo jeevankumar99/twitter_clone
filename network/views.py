@@ -22,12 +22,37 @@ def get_posts(request):
 
 
 def get_follower_info(request, username):
+    
+    # get user, followers and following users
     user = User.objects.get(username=username)
     followers = Follower.objects.filter(user=user)
-    print(followers)
+    following = Follower.objects.filter(follower=user)
 
-    json_followers = JsonResponse([follower_obj.serialize() for follower_obj in followers], safe=False)
-    return json_followers
+    # serialize each user to useable strings for javascript
+    followers = [follower_obj.serialize('followers') for follower_obj in followers]
+    following = [following_obj.serialize('following') for following_obj in following]
+    
+    # checks if the logged in user is following the user in the current page
+    if str(request.user) == username:
+        is_following = False
+        disable_button = True
+    else:
+        disable_button = False
+        current_user = User.objects.get(username=request.user)
+        if len(Follower.objects.filter(user=user, follower=current_user)) > 0:
+            is_following = True
+        else: 
+            is_following = False 
+    
+    # converts the data into a dict to return as JsonRepsonse
+    json_dict = {
+        'followers': followers,
+        'following': following,
+        'isFollowing': is_following,
+        'disableButton' : disable_button,
+    }
+    
+    return JsonResponse(json_dict, safe=False)
 
 
 def login_view(request):
@@ -115,3 +140,21 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+@csrf_exempt
+def update_followers(request):
+    if request.method != 'POST':
+        return JsonResponse({"error": "Request method should be POST"}, 400)
+    data = json.loads(request.body)
+    current_user = str(request.user)
+    target_user = data.get('target_user')
+    update_type = data.get('type')
+    current_user = User.objects.get(username=current_user)
+    target_user = User.objects.get(username=target_user)
+
+    if update_type == "Follow":
+        Follower.objects.create(user=target_user, follower=current_user)
+    else:
+        Follower.objects.get(user=target_user, follower=current_user).delete()
+    
+    return HttpResponse("Followers Updated!")
