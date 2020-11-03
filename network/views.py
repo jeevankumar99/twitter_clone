@@ -8,16 +8,49 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import User, Post, Follower
+from .models import Like, User, Post, Follower
+
+@login_required(login_url='/login')
+def following(request):
+    return render(request, "network/index.html", {
+        'posts_type': "following"
+    })
 
 @login_required(login_url='/login')
 def index(request):
-    return render(request, "network/index.html")
+    return render(request, "network/index.html", {
+        'posts_type': "all"
+    })
 
-def get_posts(request):
-    posts = Post.objects.all()
+def get_posts(request, filter):
+
+    curr_user = User.objects.get(username=request.user)
+    # only returns posts of users followed by the current logged in user.
+    if filter == 'following':
+        following_users = Follower.objects.filter(follower=curr_user)
+        following_users = [follower_items.user for follower_items in following_users]
+        posts = Post.objects.filter(user__in=following_users)
+
+    # returns all posts
+    elif filter == 'null':
+        posts = Post.objects.all()
+
+    # only returns posts of user whose profile is being displayed.    
+    else:
+        user = User.objects.get(username=filter)
+        posts = Post.objects.filter(user=user)
+    print(posts)
+    serialized_posts = []
     posts = posts.order_by('-timestamp').all()
-    json_posts = JsonResponse([post.serialize() for post in posts], safe=False)
+    for post in posts:
+        likes = len(Like.objects.filter(post=post))
+        if len(Like.objects.filter(post=post, user=curr_user)) > 0:
+            serialized_post = post.serialize('Unlike', likes)
+        else:
+            serialized_post = post.serialize('Like', likes)
+        serialized_posts.append(serialized_post)
+    print (serialized_posts)
+    json_posts = JsonResponse(serialized_posts, safe=False)
     return json_posts
 
 
@@ -78,6 +111,7 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
+
 
 @csrf_exempt
 def create_and_update_posts(request, post_id):
@@ -158,3 +192,13 @@ def update_followers(request):
         Follower.objects.get(user=target_user, follower=current_user).delete()
     
     return HttpResponse("Followers Updated!")
+
+def update_likes(request, post_id):
+    post = Post.objects.get(id=post_id)
+    user = User.objects.get(username=request.user)
+    if len(Like.objects.filter(post=post, user=user)) > 0:
+        Like.objects.get(post=post, user=user).delete()
+    else:
+        Like.objects.create(post=post, user=user)
+    
+    return HttpResponse("Likes Updated!")

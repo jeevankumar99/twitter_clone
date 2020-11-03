@@ -1,3 +1,4 @@
+
 let post_id = 0;
 
 class UserDiv extends React.Component {
@@ -14,20 +15,30 @@ class Post extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            likes: this.props.postData.likes
+            likes: this.props.postData.likes,
+            likeButtonState: this.props.postData.like_status
         }
     };  
-    incrementLike = () => {
-        this.setState(state => ({
-            likes: state.likes + 1
-        }));
-        fetch(`/new_post/${this.props.postData.id}`, {
-            method: 'PUT',
-            body: JSON.stringify({
-                likes: this.state.likes + 1              
-            })
-        })
+    updateLikes = (button) => {
+        console.log(button.target)
+        if (this.state.likeButtonState === 'Like') {
+            this.setState(state => ({
+                likes: state.likes + 1,
+                likeButtonState: 'Unlike',
+            }));
+            button.target.innerHTML = 'Unlike'
+        }
+        else {
+            this.setState(state => ({
+                likes: state.likes - 1,
+                likeButtonState: 'Like',
+            }));
+            button.target.innerHTML = 'Like';
+        }
+        fetch(`/update_likes/${this.props.postData.id}`)
+        button.target.innerHTML = this.state.likeButtonState
     }
+
     editPost = () => {
        document.querySelector('#all-posts-container').style.display = 'none';
        document.querySelector('#post-type').innerHTML = "Edit Post";
@@ -48,31 +59,36 @@ class Post extends React.Component {
                     <h4>{this.props.postData.content}</h4>
                 </div>
                 <h5> This post has {this.state.likes} Likes.</h5>
-                <button onClick={this.incrementLike} id="like-button">Like</button>
+                <button onClick={button => this.updateLikes(button)} className="like-button">{this.state.likeButtonState}</button>
             </div>
         )
     }
 }
 
+
 initiateElements();
 
 function initiateElements() {
-    loadPosts();
+    let postsType = document.querySelector('#posts-type').innerHTML;
+    postsType === 'following' ? (loadPosts('following')) : (loadPosts());
     let editPostButton = document.querySelector('#submit-edit-post');
     editPostButton.addEventListener('click', () => createNewPost('PUT'));
     let newPostButton = document.querySelector('#submit-new-post');
     newPostButton.addEventListener('click', () => createNewPost('POST'));
 }
 
-function loadPosts() {
+function loadPosts(filter=null) {
+    console.log(filter);
     document.querySelector('#all-posts-container').style.display = 'block';
+    document.querySelector('#all-posts-container').textContent = '';
     document.querySelector('#submit-edit-post').style.display = 'none';
     document.querySelector('#submit-new-post').style.display = 'block';
     document.querySelector('#post-type').innerHTML = "New Post";
     document.querySelector('#new-post-content').value = "Write Something...";
-    fetch('/get_posts')
+    fetch(`/get_posts/${filter}`)
     .then(response => response.json())
     .then(data => {
+        console.log(data);
         data.forEach(post => {
             const post_div = document.createElement('div');
             const user_id = document.querySelector('#user-id');

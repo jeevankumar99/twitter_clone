@@ -3,6 +3,12 @@ body {
     color: white;
 }
 
+#top-nav-bar {
+    position: fixed;
+    width: 100%;
+    margin-top: -22px;
+}
+
 .post-container, #new-post-form {
     background-color: rgb(49, 49, 49);
     color: white;
