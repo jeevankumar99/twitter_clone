@@ -25,6 +25,8 @@ def index(request):
 def get_posts(request, filter):
 
     curr_user = User.objects.get(username=request.user)
+    page = int(request.GET.get('page'))
+    
     # only returns posts of users followed by the current logged in user.
     if filter == 'following':
         following_users = Follower.objects.filter(follower=curr_user)
@@ -39,9 +41,13 @@ def get_posts(request, filter):
     else:
         user = User.objects.get(username=filter)
         posts = Post.objects.filter(user=user)
-    print(posts)
+    
     serialized_posts = []
+
+    # sort posts in reverse chronological order.
     posts = posts.order_by('-timestamp').all()
+    
+    # serialize posts
     for post in posts:
         likes = len(Like.objects.filter(post=post))
         if len(Like.objects.filter(post=post, user=curr_user)) > 0:
@@ -49,7 +55,22 @@ def get_posts(request, filter):
         else:
             serialized_post = post.serialize('Like', likes)
         serialized_posts.append(serialized_post)
-    print (serialized_posts)
+    
+    # Add page info to response
+    page_info = {}
+    page_info['id'] = None
+
+    # checks if current page is the last page and sends response
+    if len(serialized_posts[(page * 10):]) < 1:
+        page_info['nextPageExists'] = False
+    else:
+        page_info['nextPageExists'] = True
+    
+    # Slice only 10 posts at a time
+    serialized_posts = serialized_posts[(page * 10) - 10: (page * 10)]
+    serialized_posts.insert(0, page_info)
+    
+    # return as JsonResponse
     json_posts = JsonResponse(serialized_posts, safe=False)
     return json_posts
 
@@ -125,7 +146,6 @@ def create_and_update_posts(request, post_id):
     if request.method == 'PUT':
         post = Post.objects.get(id=post_id)
         if likes != None:
-            print ("it is working", likes)
             post.likes = likes
         else:
             post.content = content

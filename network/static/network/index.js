@@ -75,22 +75,39 @@ function initiateElements() {
     editPostButton.addEventListener('click', () => createNewPost('PUT'));
     let newPostButton = document.querySelector('#submit-new-post');
     newPostButton.addEventListener('click', () => createNewPost('POST'));
+    window.onscroll = () => {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+            console.log("Scrolled down all the way!");
+        }
+    }
 }
 
-function loadPosts(filter=null) {
-    console.log(filter);
+function loadPosts(filter=null, page=1) {
+
+    // Change layout of the DOM  to display posts.
     document.querySelector('#all-posts-container').style.display = 'block';
-    document.querySelector('#all-posts-container').textContent = '';
     document.querySelector('#submit-edit-post').style.display = 'none';
     document.querySelector('#submit-new-post').style.display = 'block';
     document.querySelector('#post-type').innerHTML = "New Post";
     document.querySelector('#new-post-content').value = "Write Something...";
-    fetch(`/get_posts/${filter}`)
+    document.querySelector('#all-posts-container').textContent = '';
+
+    // To scroll to the top after clicking next to previous button
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+
+    // Get 10 posts from backend.
+    fetch(`/get_posts/${filter}?page=${page}`)
     .then(response => response.json())
+
+    // Load the 10 posts into the DOM
     .then(data => {
         console.log(data);
         data.forEach(post => {
-            const post_div = document.createElement('div');
+
+            // To load only valid posts into the DOM
+            if (post.id !== null) {
+                const post_div = document.createElement('div');
             const user_id = document.querySelector('#user-id');
             post.displayState= "none";
             if (post.username == user_id.innerHTML) {
@@ -99,8 +116,37 @@ function loadPosts(filter=null) {
             post.currentUser = user_id.innerHTML;
             ReactDOM.render(<Post postData={post}/>, post_div);
             document.querySelector('#all-posts-container').appendChild(post_div);
+            }
         });
-    });
+        return data;
+    })
+
+    // Add Next and Previous buttons at the end of 10 posts.
+    .then((data) => {
+
+        // Skip previous button for first page
+        if (page != 1) {
+            let prevButton = document.createElement('button');
+            prevButton.innerHTML = "Previous";
+            prevButton.addEventListener('click', () => {
+                loadPosts(filter, page - 1)
+            })
+            document.querySelector('#all-posts-container').appendChild(prevButton);
+        }
+
+        // Skip next button for the last page
+        if (data[0].nextPageExists === true) {
+            let nextButton = document.createElement('button');
+            nextButton.innerHTML = "Next";
+            nextButton.addEventListener('click', () => {
+                loadPosts(filter, page + 1)
+            })
+            document.querySelector('#all-posts-container').appendChild(nextButton);
+        }
+    })
+
+    // Catch any errors
+    .catch(error => console.log(error));
 }
 
 function createNewPost(type) {

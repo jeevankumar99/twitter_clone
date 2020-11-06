@@ -73,7 +73,6 @@ class ProfilePost extends React.Component {
         }
     };  
     updateLikes = (button) => {
-        console.log(button.target)
         if (this.state.likeButtonState === 'Like') {
             this.setState(state => ({
                 likes: state.likes + 1,
@@ -93,13 +92,13 @@ class ProfilePost extends React.Component {
     }
 
     editPost = () => {
-       document.querySelector('#all-posts-container').style.display = 'none';
+       document.querySelector('#user-posts').style.display = 'none';
        document.querySelector('#post-type').innerHTML = "Edit Post";
+       document.querySelector('#new-post-form').style.display = 'block';
        document.querySelector('#new-post-content').value = this.props.postData.content;
        document.querySelector('#submit-new-post').style.display = 'none';
        document.querySelector('#submit-edit-post').style.display = 'block';
        post_id = this.props.postData.id;
-       console.log('editPost working!') 
     }
 
     render () {
@@ -123,6 +122,8 @@ initiateElements();
 function initiateElements() {
     displayFollowersAndButtons();
     loadUserPosts();
+    let editPostButton = document.querySelector('#submit-edit-post');
+    editPostButton.addEventListener('click', () => createNewPost('PUT'))
     let followPostButton = document.querySelector('#follow-post-button');
     followPostButton.addEventListener('click', () => {
         loadUserPosts('following');
@@ -135,18 +136,31 @@ function displayFollowersAndButtons() {
     .then(response => response.json())
     .then(data => {
         data.isFollowing ? (data.buttonText = 'Unfollow') : (data.buttonText = 'Follow');
-        console.log(data, Object.keys(data).length);
         ReactDOM.render(<FollowerInfo data={data}/>, document.querySelector('#followers-info'));
     })
 }
 
-function loadUserPosts() {
+function loadUserPosts(page=1) {
     let user = String(window.location.pathname).slice(10,)
-    fetch(`/get_posts/${user}`)
+    document.querySelector('#user-posts').textContent = '';
+    document.querySelector('#user-posts').style.display = 'block';
+    document.querySelector('#new-post-form').style.display = 'none';
+    
+    // To scroll to the top after clicking next to previous button
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+
+    // Get 10 posts from backend
+    fetch(`/get_posts/${user}?page=${page}`)
     .then(response => response.json())
-    .then(data => {
+    
+    // Load the 10 posts into the DOM
+     .then(data => {
         data.forEach(post => {
-            const post_div = document.createElement('div');
+
+            // To load only valid posts into the DOM
+            if (post.id !== null) {
+                const post_div = document.createElement('div');
             const user_id = document.querySelector('#user-id');
             post.displayState= "none";
             if (post.username == user_id.innerHTML) {
@@ -155,6 +169,49 @@ function loadUserPosts() {
             post.currentUser = user_id.innerHTML;
             ReactDOM.render(<ProfilePost postData={post}/>, post_div);
             document.querySelector('#user-posts').appendChild(post_div);
+            }
         });
-    });
+        return data;
+    })
+
+    // Add Next and Previous buttons at the end of 10 posts.
+    .then((data) => {
+
+        // Skip previous button for first page
+        if (page != 1) {
+            let prevButton = document.createElement('button');
+            prevButton.innerHTML = "Previous";
+            prevButton.addEventListener('click', () => {
+                loadUserPosts(page - 1)
+            })
+            document.querySelector('#user-posts').appendChild(prevButton);
+        }
+
+        // Skip next button for the last page
+        if (data[0].nextPageExists === true) {
+            let nextButton = document.createElement('button');
+            nextButton.innerHTML = "Next";
+            nextButton.addEventListener('click', () => {
+                loadUserPosts(page + 1)
+            })
+            document.querySelector('#user-posts').appendChild(nextButton);
+        }
+    })
+
+    // Catch any errors
+    .catch(error => console.log(error));
+}
+
+function createNewPost(type) {
+    fetch(`/new_post/${post_id}`, {
+        method: type, 
+        body: JSON.stringify({
+            content: document.querySelector('#new-post-content').value
+        })
+    })
+    .then(() => {
+        document.querySelector('#new-post-content').value = '';
+        document.querySelector('#user-posts').textContent = '';
+        loadUserPosts();
+    })
 }
