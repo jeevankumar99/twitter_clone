@@ -1,4 +1,7 @@
 
+const like_button = "https://www.clipartmax.com/png/middle/349-3495331_jewlr-instagram-like-icon-png.png";
+const emptyLikeIcon = "https://lh3.googleusercontent.com/proxy/Edd_dP5sNInJYWVjUdXSqMChwknIPIw-Os8R41EeJSeqLyDa-gSfZnFN2Q41ZqK3Gi6KxREbDWMTj58bWy9GAeemWIXweibx1mloPKnYdrHc0dVIDdgPh1Ip2XuOS7IKBMrTy5N2ULQlD227XNmY7-LN1pN-djV4BEwianAg_kPORk-4c0c7";
+
 class FollowerInfo extends React.Component {
     constructor(props) {
         super(props);
