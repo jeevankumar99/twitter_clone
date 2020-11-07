@@ -137,6 +137,7 @@ def logout_view(request):
 @csrf_exempt
 def create_and_update_posts(request, post_id):
 
+    print ("function create called", post_id)
     # get data from request
     data = json.loads(request.body)
     content = data.get("content")

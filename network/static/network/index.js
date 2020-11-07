@@ -1,4 +1,5 @@
 
+// publically declared to pass post_id to multiple functions when needed.
 let post_id = 0;
 
 class UserDiv extends React.Component {
@@ -16,9 +17,15 @@ class Post extends React.Component {
         super(props);
         this.state = {
             likes: this.props.postData.likes,
-            likeButtonState: this.props.postData.like_status
+            likeButtonState: this.props.postData.like_status,
+            postType: 'post',
+            content: <h4 id="post-content">{this.props.postData.content}</h4>,
+            editButton: null,
+            parentEditButton: <button  onClick={button => this.editPost(button)} id='edit-button' style={{ display: this.props.postData.displayState}}>Edit</button>,
         }
     };  
+
+    // Update likes for each post
     updateLikes = (button) => {
         console.log(button.target)
         if (this.state.likeButtonState === 'Like') {
@@ -39,14 +46,28 @@ class Post extends React.Component {
         button.target.innerHTML = this.state.likeButtonState
     }
 
+    // Dynamically allows users to edit post
     editPost = () => {
-       document.querySelector('#all-posts-container').style.display = 'none';
-       document.querySelector('#post-type').innerHTML = "Edit Post";
-       document.querySelector('#new-post-content').value = this.props.postData.content;
-       document.querySelector('#submit-new-post').style.display = 'none';
-       document.querySelector('#submit-edit-post').style.display = 'block';
+        this.setState(state => ({
+           postType: 'edit',
+           content: <textarea id="edited-content">{this.props.postData.content}</textarea>,
+           editButton: <button onClick={this.updatePost} id="submit-edit-post">Post</button>,
+           parentEditButton: null,
+        })); 
        post_id = this.props.postData.id;
-       console.log('editPost working!') 
+    }
+
+    // Updates post's content without reloading the page.
+    updatePost = () => {
+        console.log('update post executing!');
+        let newContent = document.querySelector('#edited-content').value;
+        this.setState(state => ({
+            postType: 'post',
+            content: <h4 id="post-content">{newContent}</h4>,
+            editButton: null,
+            parentEditButton: <button  onClick={button => this.editPost(button)} id='edit-button' style={{ display: this.props.postData.displayState}}>Edit</button>
+        }))
+        createNewPost('PUT');
     }
 
     render () {
@@ -54,9 +75,10 @@ class Post extends React.Component {
             <div className="post-container">
                 <UserDiv username={this.props.postData.username}/>
                 <p>{this.props.postData.timestamp}</p>
-                <button  onClick={this.editPost} id='edit-button' style={{ display: this.props.postData.displayState}}>Edit</button>
-                <div className="post-contents">
-                    <h4>{this.props.postData.content}</h4>
+                {this.state.parentEditButton}
+                <div className="post-contents-div">
+                    {this.state.content}
+                    {this.state.editButton}
                 </div>
                 <h5> This post has {this.state.likes} Likes.</h5>
                 <button onClick={button => this.updateLikes(button)} className="like-button">{this.state.likeButtonState}</button>
@@ -68,6 +90,7 @@ class Post extends React.Component {
 
 initiateElements();
 
+// Calls all the neccessary functions to display the page.
 function initiateElements() {
     let postsType = document.querySelector('#posts-type').innerHTML;
     postsType === 'following' ? (loadPosts('following')) : (loadPosts());
@@ -82,6 +105,7 @@ function initiateElements() {
     }
 }
 
+// Loads the posts into the DOM
 function loadPosts(filter=null, page=1) {
 
     // Change layout of the DOM  to display posts.
@@ -149,17 +173,23 @@ function loadPosts(filter=null, page=1) {
     .catch(error => console.log(error));
 }
 
+// Create New Posts
 function createNewPost(type) {
-    console.log('createNewPost working!', type)
-    fetch(`/new_post/${post_id}`, {
+    let postContent;
+    if (type === 'POST') {
+        postContent = document.querySelector('#new-post-content').value;
+    }
+    else {
+        postContent = document.querySelector('#edited-content').value;
+    }
+    console.log('createNewPost is working!', type)
+    fetch(`/create_and_update_posts/${post_id}`, {
         method: type, 
         body: JSON.stringify({
-            content: document.querySelector('#new-post-content').value
+            content: postContent,
         })
     })
     .then(() => {
-        document.querySelector('#new-post-content').value = '';
-        document.querySelector('#all-posts-container').textContent = '';
-        loadPosts();
+        type === 'POST' ? (loadPosts()) : (null);
     })
 }

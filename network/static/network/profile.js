@@ -69,9 +69,15 @@ class ProfilePost extends React.Component {
         super(props);
         this.state = {
             likes: this.props.postData.likes,
-            likeButtonState: this.props.postData.like_status
+            likeButtonState: this.props.postData.like_status, 
+            postType: 'post',
+            content: <h4 id="post-content">{this.props.postData.content}</h4>,
+            editButton: null,
+            parentEditButton: <button  onClick={button => this.editPost(button)} id='edit-button' style={{ display: this.props.postData.displayState}}>Edit</button>,
         }
-    };  
+    }; 
+    
+    // Update likes for each post
     updateLikes = (button) => {
         if (this.state.likeButtonState === 'Like') {
             this.setState(state => ({
@@ -91,24 +97,40 @@ class ProfilePost extends React.Component {
         button.target.innerHTML = this.state.likeButtonState
     }
 
+    // Dynamically allows user to edit post
     editPost = () => {
-       document.querySelector('#user-posts').style.display = 'none';
-       document.querySelector('#post-type').innerHTML = "Edit Post";
-       document.querySelector('#new-post-form').style.display = 'block';
-       document.querySelector('#new-post-content').value = this.props.postData.content;
-       document.querySelector('#submit-new-post').style.display = 'none';
-       document.querySelector('#submit-edit-post').style.display = 'block';
+        this.setState(state => ({
+           postType: 'edit',
+           content: <textarea id="edited-content">{this.props.postData.content}</textarea>,
+           editButton: <button onClick={this.updatePost} id="submit-edit-post">Post</button>,
+           parentEditButton: null,
+        })); 
        post_id = this.props.postData.id;
     }
 
+    // Updates the post content without reloading the page
+    updatePost = () => {
+        console.log('update post executing!');
+        let newContent = document.querySelector('#edited-content').value;
+        this.setState(state => ({
+            postType: 'post',
+            content: <h4 id="post-content">{newContent}</h4>,
+            editButton: null,
+            parentEditButton: <button  onClick={button => this.editPost(button)} id='edit-button' style={{ display: this.props.postData.displayState}}>Edit</button>
+        }))
+        createNewPost('PUT');
+    }
+
+    
     render () {
         return (
             <div className="post-container">
                 <UserDiv username={this.props.postData.username}/>
                 <p>{this.props.postData.timestamp}</p>
-                <button  onClick={this.editPost} id='edit-button' style={{ display: this.props.postData.displayState}}>Edit</button>
-                <div className="post-contents">
-                    <h4>{this.props.postData.content}</h4>
+                {this.state.parentEditButton}
+                <div className="post-contents-div">
+                    {this.state.content}
+                    {this.state.editButton}
                 </div>
                 <h5> This post has {this.state.likes} Likes.</h5>
                 <button onClick={button => this.updateLikes(button)} className="like-button">{this.state.likeButtonState}</button>
@@ -119,17 +141,17 @@ class ProfilePost extends React.Component {
 
 initiateElements();
 
+// Calls all neccessary functions to load profile elements
 function initiateElements() {
     displayFollowersAndButtons();
     loadUserPosts();
-    let editPostButton = document.querySelector('#submit-edit-post');
-    editPostButton.addEventListener('click', () => createNewPost('PUT'))
     let followPostButton = document.querySelector('#follow-post-button');
     followPostButton.addEventListener('click', () => {
         loadUserPosts('following');
     })
 }
 
+// Gets followers and buttons for profile pages
 function displayFollowersAndButtons() {
     let username = String(window.location.pathname).slice(10,)
     fetch(`/followers/${username}`)
@@ -140,11 +162,11 @@ function displayFollowersAndButtons() {
     })
 }
 
+// Loads user posts into DOM
 function loadUserPosts(page=1) {
     let user = String(window.location.pathname).slice(10,)
     document.querySelector('#user-posts').textContent = '';
     document.querySelector('#user-posts').style.display = 'block';
-    document.querySelector('#new-post-form').style.display = 'none';
     
     // To scroll to the top after clicking next to previous button
     document.documentElement.scrollTop = 0;
@@ -202,16 +224,13 @@ function loadUserPosts(page=1) {
     .catch(error => console.log(error));
 }
 
+// Used to update edited posts in the backend.
 function createNewPost(type) {
-    fetch(`/new_post/${post_id}`, {
+    console.log('createNewPost is working!', type)
+    fetch(`/create_and_update_posts/${post_id}`, {
         method: type, 
         body: JSON.stringify({
-            content: document.querySelector('#new-post-content').value
+            content: document.querySelector('#edited-content').value
         })
-    })
-    .then(() => {
-        document.querySelector('#new-post-content').value = '';
-        document.querySelector('#user-posts').textContent = '';
-        loadUserPosts();
     })
 }
