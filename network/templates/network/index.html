@@ -8,11 +8,14 @@
 
 {% block body %}
 <p id="posts-type" style="display: none">{{ posts_type }}</p>
-<div id="new-post-form">
-    <h3 id="post-type">New Post</h3>
-    <textarea id="new-post-content"></textarea>
-    <button id="submit-edit-post">Post</button>
-    <button id="submit-new-post">Post</button>
+<div id="middle-panel">
+    <div id="home-top-panel">Home</div>
+    <div id="new-post-form">
+        <h3 id="post-type">New Post</h3>
+        <textarea id="new-post-content"></textarea>
+        <button id="submit-edit-post">Post</button>
+        <button id="submit-new-post">Post</button>
+    </div>
+    <div id="all-posts-container"></div>
 </div>
-<div id="all-posts-container"></div>
 {% endblock %}

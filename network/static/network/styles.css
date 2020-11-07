@@ -1,23 +1,86 @@
-body {
-    background-color: black;
+a {
     color: white;
 }
 
-#top-nav-bar {
+body {
+    background-color: rgb(21,32,43);
+    color: white;
+    margin: 0px 0px 15% 15%;
+    height: 100vh;
+}
+
+
+
+/* Divs */
+
+#all-posts-container {
+    margin-left: 150px;
+    display: flex;
+    width: 80%;
+}
+
+#home-top-panel {
+    font-size: 24px;
+    margin-top: -10px;
+    margin-left: 150px;
+    height: 70px;
+    width: 44.9%;
+    background-color: rgb(21,32,43);
+    padding: 20px;
     position: fixed;
-    width: 100%;
-    margin-top: -22px;
+    display: block;
+    border-bottom: 1px solid rgb(56,68,77);
+    border-right: 1px solid rgb(56,68,77);
+    border-left: 1px solid rgb(56, 68, 77)
+}
+
+#side-panel-brand-name, #side-panel-username, #side-panel-all-posts, #side-panel-following, #side-panel-logout, #side-panel-login {
+    color: white;
+    font-size: 24px;
+    margin: 5px 5px;
+}
+
+#side-panel {
+    display: flex;
+    margin-top: -20px;
+    padding: 10px;
+    padding-top: 50px;
+    float: left;
+    width: 8%;
+    height: 100vh;
+    position: fixed;
+    flex-direction: column;
+}
+
+#side-panel-right {
+    display: flex;
+    float: right;
+    width: 10%;
+    height: 100vh;
+    margin-left: 53%;
+    position: fixed;
 }
 
 .post-container, #new-post-form {
-    background-color: rgb(49, 49, 49);
     color: white;
-    border-radius: 20px;
-    width: 50%;
-    margin: 20px;
-    padding: 10px;
+    width: 66%;
+    padding: 20px;
+    border-left: 1px solid rgb(56, 68, 77);
+    border-right: 1px solid rgb(56, 68, 77);
+    border-bottom: 1px solid rgb(56,68,77);
 }
 
-.post-contents {
-    margin-left: 50px;
+#middle-panel {
+    display: flex;
+    flex-direction: column;
 }
+
+#new-post-form {
+    margin: 50px 0px 0px 150px;
+    width: 52.8%;
+    background-color: rgb(30, 42, 54);
+}
+
+
+
+

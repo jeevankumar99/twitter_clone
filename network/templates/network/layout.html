@@ -14,37 +14,35 @@
     </head>
     <body>
         <p id="user-id" style="display: none">{{ user.username }}</p>
-        <nav id="top-nav-bar" class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <a class="navbar-brand" href="#">Network</a>
-          
-            <div>
-              <ul class="navbar-nav mr-auto">
+            <div id="side-panel">
+                <div id="side-panel-brand-name">
+                    <a  href="{% url 'index' %}">Network</a>
+                </div>
                 {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/profiles/{{ user.username }}"><strong>{{ user.username }}</strong></a>
-                    </li>
+                    <div id="side-panel-username">
+                        <a  href="/profiles/{{ user.username }}"><strong>{{ user.username }}</strong></a>
+                    </div>
                 {% endif %}
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'index' %}">All Posts</a>
-                </li>
+                <div id="side-panel-all-posts">
+                  <a  href="{% url 'index' %}">All Posts</a>
+                </div>
                 {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a id="follow-post-button" class="nav-link" href="{% url 'following' %}">Following</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
-                    </li>
+                    <div id="side-panel-following">
+                        <a id="follow-post-button"  href="{% url 'following' %}">Following</a>
+                    </div>
+                    <div id="side-panel-logout">
+                        <a  href="{% url 'logout' %}">Log Out</a>
+                    </div>
                 {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">Log In</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'register' %}">Register</a>
-                    </li>
+                    <div id="side-panel-login">
+                        <a  href="{% url 'login' %}">Log In</a>
+                    </div>
+                    <div id="side-panel-register">
+                        <a  href="{% url 'register' %}">Register</a>
+                    </div>
                 {% endif %}
-              </ul>
             </div>
-          </nav>
+            <div id="side-panel-right">!--Right Panel User Info --!</div>
         
         <div class="body">
             {% block body %}
