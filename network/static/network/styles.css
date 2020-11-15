@@ -2,6 +2,11 @@ a {
     color: white;
 }
 
+a:hover {
+    text-decoration: none;
+    color: white;
+}
+
 body {
     background-color: rgb(21,32,43);
     color: white;
@@ -9,6 +14,71 @@ body {
     height: 100vh;
 }
 
+li {
+    display: inline;
+}
+
+textarea {
+    background-color: rgb(30, 42, 54);
+    color: white;
+    width: 100%;
+    border: 0px;
+    border-bottom: 1px solid rgb(29,161,242);
+    height: 30px;
+    animation-name: grow;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-play-state: paused;
+}
+
+textarea:focus {
+    outline: none;
+}
+
+/* animations */
+
+@keyframes grow {
+    from {
+        height: 30px;
+    }
+    to {
+        height: 300px;
+    }
+}
+
+@keyframes shrink {
+    from {
+        height: 300px;
+    }
+    to {
+        height: 30px;
+    }
+}
+
+/* Buttons */
+
+
+
+#submit-new-post, #post-close-button  {
+    background-color:rgb(29,161,242);
+    color: white;
+    border-radius: 10px;
+    width: 70px;
+    margin: 10px 0px 0px 0px;
+    height: 25px;
+    border: 0px;
+}
+
+
+
+#submit-new-post:hover {
+    background-color: black;
+}
+
+#submit-new-post:focus, #post-close-button:focus {
+    outline: none;
+    border: 0px;
+}
 
 
 /* Divs */
@@ -17,6 +87,11 @@ body {
     margin-left: 150px;
     display: flex;
     width: 80%;
+}
+
+#side-panel-all-posts:hover, #side-panel-following:hover, #side-panel-logout:hover, #side-panel-login:hover {
+    background-color: rgb(56, 102, 138);
+    border-radius: 15px;
 }
 
 #home-top-panel {
@@ -34,10 +109,16 @@ body {
     border-left: 1px solid rgb(56, 68, 77)
 }
 
+#post-buttons-list {
+    margin-left: -40px;
+}
+
+
 #side-panel-brand-name, #side-panel-username, #side-panel-all-posts, #side-panel-following, #side-panel-logout, #side-panel-login {
     color: white;
     font-size: 24px;
     margin: 5px 5px;
+    text-align: center;
 }
 
 #side-panel {

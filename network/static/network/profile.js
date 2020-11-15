@@ -20,6 +20,8 @@ class FollowerInfo extends React.Component {
                 type: this.state.buttonText,
             })
         })
+
+        // Checks if user is being followed and changes the button accordingly
         if (this.state.isFollowing) {
             this.setState(state => ({
                 isFollowing: false,

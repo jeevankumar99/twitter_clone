@@ -99,13 +99,37 @@ function initiateElements() {
     postsType === 'following' ? (loadPosts('following')) : (loadPosts());
     let editPostButton = document.querySelector('#submit-edit-post');
     editPostButton.addEventListener('click', () => createNewPost('PUT'));
+    
+    let textArea = document.querySelector('textarea');
+    
     let newPostButton = document.querySelector('#submit-new-post');
-    newPostButton.addEventListener('click', () => createNewPost('POST'));
-    window.onscroll = () => {
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-            console.log("Scrolled down all the way!");
-        }
-    }
+    newPostButton.addEventListener('click', () => {
+        textArea.style.animationName = 'shrink';
+        createNewPost('POST');
+    });
+    
+    let closeButton = document.createElement('button')
+    closeButton.innerHTML = "Close";
+    closeButton.id = 'post-close-button';
+    closeButton.addEventListener('click', () => {
+        console.log('close button clicked')
+        textArea.style.animationName = 'shrink';
+        closeButton.style.display = 'none';
+
+    });
+    let tempListItem = document.createElement('li');
+    tempListItem.appendChild(closeButton);
+    textArea.addEventListener('focusin', () => {
+        textArea.style.outline = 'none';
+        closeButton.style.display = 'inline-block'
+        textArea.style.animationName = 'grow';
+        textArea.style.animationPlayState = 'running';
+        textArea.style.border = '0px';
+        textArea.style.borderBottom = '1px solid rgb(29,161,242)';
+        let buttonList = document.querySelector('#post-buttons-list');
+        buttonList.insertBefore(tempListItem, buttonList.childNodes[0]);
+
+    })
 }
 
 // Loads the posts into the DOM
@@ -114,9 +138,10 @@ function loadPosts(filter=null, page=1) {
     // Change layout of the DOM  to display posts.
     document.querySelector('#all-posts-container').style.display = 'block';
     document.querySelector('#submit-edit-post').style.display = 'none';
-    document.querySelector('#submit-new-post').style.display = 'block';
+    document.querySelector('#submit-new-post').style.display = 'inline';
     document.querySelector('#post-type').innerHTML = "New Post";
-    document.querySelector('#new-post-content').value = "Write Something...";
+    document.querySelector('#new-post-content').value = '';
+    document.querySelector('#new-post-content').placeholder = "Write Something...";
     document.querySelector('#all-posts-container').textContent = '';
 
     // To scroll to the top after clicking next to previous button
@@ -192,6 +217,8 @@ function createNewPost(type) {
             content: postContent,
         })
     })
+
+    // Checks if post is edited or created
     .then(() => {
         type === 'POST' ? (loadPosts()) : (null);
     })
