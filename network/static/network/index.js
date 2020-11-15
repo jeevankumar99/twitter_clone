@@ -101,14 +101,15 @@ function initiateElements() {
     editPostButton.addEventListener('click', () => createNewPost('PUT'));
     
     let textArea = document.querySelector('textarea');
+    let closeButton = document.createElement('button')
     
     let newPostButton = document.querySelector('#submit-new-post');
     newPostButton.addEventListener('click', () => {
         textArea.style.animationName = 'shrink';
+        closeButton.style.display = 'none';
         createNewPost('POST');
     });
     
-    let closeButton = document.createElement('button')
     closeButton.innerHTML = "Close";
     closeButton.id = 'post-close-button';
     closeButton.addEventListener('click', () => {
