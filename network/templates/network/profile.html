@@ -12,9 +12,13 @@
         <p id="followers">{{ followers }}</p>
         <p id="following">{{ following }}</p>
     </div>
-    <div id="profile-username">
-        <h2>{{ username }}</h2>
+    <div id="profile-middle-panel">
+        <div id="profile-info">
+            <div id="profile-username">
+                <h2>{{ username }}</h2>
+            </div>
+            <div id="followers-info"></div>
+        </div>
+        <div id="user-posts"></div>
     </div>
-    <div id="followers-info"></div>
-    <div id="user-posts"></div>
 {% endblock %}

@@ -53,23 +53,36 @@ class Post extends React.Component {
     editPost = () => {
         this.setState(state => ({
            postType: 'edit',
-           content: <textarea id="edited-content">{this.props.postData.content}</textarea>,
-           editButton: <button onClick={this.updatePost} id="submit-edit-post">Post</button>,
+           content: <textarea onClick={this.expandTextArea} id="edited-content">{this.props.postData.content}</textarea>,
+           editButton: <button onClick={this.updatePost} id="submit-edit-post">Save</button>,
            parentEditButton: null,
         })); 
        post_id = this.props.postData.id;
     }
 
+    expandTextArea = () => {
+        console.log('textarea clicked!')
+        let editedContent = document.querySelector('#edited-content');
+        editedContent.style.animationName = 'grow';
+        editedContent.style.animationPlayState = 'running';
+        editedContent.style.animationDuration = '2s';
+    }
+
     // Updates post's content without reloading the page.
     updatePost = () => {
         console.log('update post executing!');
-        let newContent = document.querySelector('#edited-content').value;
-        this.setState(state => ({
-            postType: 'post',
-            content: <h4 id="post-content">{newContent}</h4>,
-            editButton: null,
-            parentEditButton: <button  onClick={button => this.editPost(button)} id='edit-button' style={{ display: this.props.postData.displayState}}>Edit</button>
-        }))
+        let editedContent = document.querySelector('#edited-content');
+        editedContent.style.animationName = 'shrink';
+        let newContent = editedContent.value;
+        this.props.postData.content = newContent;
+        setTimeout(() => {
+            this.setState(state => ({
+                postType: 'post',
+                content: <h4 id="post-content">{newContent}</h4>,
+                editButton: null,
+                parentEditButton: <button  onClick={button => this.editPost(button)} id='edit-button' style={{ display: this.props.postData.displayState}}>Edit</button>
+            }))
+        }, 2000);
         createNewPost('PUT');
     }
 
@@ -95,11 +108,11 @@ initiateElements();
 
 // Calls all the neccessary functions to display the page.
 function initiateElements() {
+    console.log('Elements initiated')
     let postsType = document.querySelector('#posts-type').innerHTML;
     postsType === 'following' ? (loadPosts('following')) : (loadPosts());
     let editPostButton = document.querySelector('#submit-edit-post');
     editPostButton.addEventListener('click', () => createNewPost('PUT'));
-    
     let textArea = document.querySelector('textarea');
     let closeButton = document.createElement('button')
     
@@ -122,6 +135,7 @@ function initiateElements() {
     tempListItem.appendChild(closeButton);
     textArea.addEventListener('focusin', () => {
         textArea.style.outline = 'none';
+        console.log('line 127 running');
         closeButton.style.display = 'inline-block'
         textArea.style.animationName = 'grow';
         textArea.style.animationPlayState = 'running';

@@ -10,9 +10,10 @@ a:hover {
 body {
     background-color: rgb(21,32,43);
     color: white;
-    margin: 0px 0px 15% 15%;
+    margin: 0px 0px 15% 20%;
     height: 100vh;
 }
+
 
 li {
     display: inline;
@@ -29,6 +30,7 @@ textarea {
     animation-duration: 2s;
     animation-fill-mode: forwards;
     animation-play-state: paused;
+    overflow: hidden;
 }
 
 textarea:focus {
@@ -57,9 +59,18 @@ textarea:focus {
 
 /* Buttons */
 
+#follower-buttons {
+    position: fixed;
+    top: 2px;
+    right: 31%;
+}
 
+#follow-button {
+    border-radius: 10px;
+    border: 0px;
+}
 
-#submit-new-post, #post-close-button  {
+#submit-new-post, #post-close-button, #follow-button  {
     background-color:rgb(29,161,242);
     color: white;
     border-radius: 10px;
@@ -69,13 +80,17 @@ textarea:focus {
     border: 0px;
 }
 
-
-
-#submit-new-post:hover {
-    background-color: black;
+#follow-button {
+    width: 80px;
 }
 
-#submit-new-post:focus, #post-close-button:focus {
+
+
+#submit-new-post:hover, #follow-button:hover {
+    background-color: rgb(54, 170, 241);
+}
+
+#submit-new-post:focus, #post-close-button:focus, #follow-button:focus {
     outline: none;
     border: 0px;
 }
@@ -89,6 +104,16 @@ textarea:focus {
     width: 80%;
 }
 
+#followers-div {
+    margin-left: 5px;
+    width: 165%;
+}
+
+.follow-blocks {
+    display: inline-block;
+    margin: 10px 8% 10px 8%;
+}
+
 #side-panel-all-posts:hover, #side-panel-following:hover, #side-panel-logout:hover, #side-panel-login:hover {
     background-color: rgb(56, 102, 138);
     border-radius: 15px;
@@ -99,20 +124,51 @@ textarea:focus {
     margin-top: -10px;
     margin-left: 150px;
     height: 70px;
-    width: 44.9%;
+    width: 42.25%;
     background-color: rgb(21,32,43);
     padding: 20px;
     position: fixed;
     display: block;
     border-bottom: 1px solid rgb(56,68,77);
     border-right: 1px solid rgb(56,68,77);
-    border-left: 1px solid rgb(56, 68, 77)
+    border-left: 1px solid rgb(56, 68, 77);
 }
 
 #post-buttons-list {
     margin-left: -40px;
 }
 
+#profile-middle-panel {
+    margin-left: 150px;
+    display: flex;
+    width: 80%;
+    flex-direction: column;
+}
+
+#profile-info {
+    position: fixed;
+    display: block;
+    width: 42.25%;
+    background-color: rgb(38, 52, 66);
+    border-left: 1px solid rgb(56, 68, 77);
+    border-right: 1px solid rgb(56, 68, 77);
+    border-bottom: 1px solid rgb(56,68,77);
+    box-shadow: 0px 4px 4px -4px black;
+    height: 100px;
+}
+
+
+#profile-username, #followers-info {
+    width: 100%;
+    padding-left: 20px;
+}
+
+
+
+#profile-username {
+    border-bottom: 1px solid rgb(77, 82, 85);
+    padding-top: 5px;
+}
 
 #side-panel-brand-name, #side-panel-username, #side-panel-all-posts, #side-panel-following, #side-panel-logout, #side-panel-login {
     color: white;
@@ -140,6 +196,10 @@ textarea:focus {
     height: 100vh;
     margin-left: 53%;
     position: fixed;
+}
+
+#user-posts {
+    margin-top: 100px;
 }
 
 .post-container, #new-post-form {

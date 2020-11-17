@@ -44,10 +44,10 @@ class FollowerInfo extends React.Component {
         }
         return (
             <div>
-                <div id="followers-div">
-                    <h5>Followers: {this.state.followers}</h5>
-                    <h5>Following: {this.state.following}</h5>
-                </div>
+                <ul id="followers-div">
+                    <h5 className="follow-blocks">Followers: {this.state.followers}</h5>
+                    <h5 className="follow-blocks">Following: {this.state.following}</h5>
+                </ul>
                 { !disableButton ? (
                     <div id="follower-buttons">
                         <button onClick={this.toggleFollowing} id="follow-button">{this.state.buttonText}</button>
@@ -106,23 +106,36 @@ class ProfilePost extends React.Component {
     editPost = () => {
         this.setState(state => ({
            postType: 'edit',
-           content: <textarea id="edited-content">{this.props.postData.content}</textarea>,
-           editButton: <button onClick={this.updatePost} id="submit-edit-post">Post</button>,
+           content: <textarea onClick={this.expandTextArea} id="edited-content">{this.props.postData.content}</textarea>,
+           editButton: <button onClick={this.updatePost} id="submit-edit-post">Save</button>,
            parentEditButton: null,
         })); 
        post_id = this.props.postData.id;
     }
 
+    expandTextArea = () => {
+        console.log('textarea clicked!')
+        let editedContent = document.querySelector('#edited-content');
+        editedContent.style.animationName = 'grow';
+        editedContent.style.animationPlayState = 'running';
+        editedContent.style.animationDuration = '2s';
+    }
+
     // Updates the post content without reloading the page
     updatePost = () => {
         console.log('update post executing!');
-        let newContent = document.querySelector('#edited-content').value;
-        this.setState(state => ({
-            postType: 'post',
-            content: <h4 id="post-content">{newContent}</h4>,
-            editButton: null,
-            parentEditButton: <button  onClick={button => this.editPost(button)} id='edit-button' style={{ display: this.props.postData.displayState}}>Edit</button>
-        }))
+        let editedContent = document.querySelector('#edited-content');
+        editedContent.style.animationName = 'shrink';
+        let newContent = editedContent.value;
+        this.props.postData.content = newContent;
+        setTimeout(() => {
+            this.setState(state => ({
+                postType: 'post',
+                content: <h4 id="post-content">{newContent}</h4>,
+                editButton: null,
+                parentEditButton: <button  onClick={button => this.editPost(button)} id='edit-button' style={{ display: this.props.postData.displayState}}>Edit</button>
+            }))
+        }, 2000);
         createNewPost('PUT');
     }
 
