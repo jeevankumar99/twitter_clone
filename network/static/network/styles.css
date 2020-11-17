@@ -65,12 +65,7 @@ textarea:focus {
     right: 31%;
 }
 
-#follow-button {
-    border-radius: 10px;
-    border: 0px;
-}
-
-#submit-new-post, #post-close-button, #follow-button  {
+#submit-new-post, #submit-edit-post, #post-close-button, #follow-button  {
     background-color:rgb(29,161,242);
     color: white;
     border-radius: 10px;
@@ -81,12 +76,30 @@ textarea:focus {
 }
 
 #follow-button {
+    border-radius: 10px;
+    border: 0px;
+    height: 30px;
+    width: 90px;
+}
+
+#follow-button {
     width: 80px;
 }
 
+#edit-button {
+    border: 1px solid rgb(54, 170, 241);
+    border-radius: 4px;
+    background-color: rgb(21,32,43);
+    color: rgb(54, 170, 241);
+    width: 50px;
+}
 
+#edit-button:hover {
+    background-color: rgb(54, 170, 241);
+    color: white;
+}
 
-#submit-new-post:hover, #follow-button:hover {
+#submit-new-post:hover, #submit-edit-post:hover, #follow-button:hover {
     background-color: rgb(54, 170, 241);
 }
 
@@ -154,9 +167,12 @@ textarea:focus {
     border-right: 1px solid rgb(56, 68, 77);
     border-bottom: 1px solid rgb(56,68,77);
     box-shadow: 0px 4px 4px -4px black;
-    height: 100px;
+    height: 140px;
 }
 
+.post-timestamp {
+    color: rgb(153, 153, 153);
+}
 
 #profile-username, #followers-info {
     width: 100%;
@@ -199,7 +215,7 @@ textarea:focus {
 }
 
 #user-posts {
-    margin-top: 100px;
+    margin-top: 130px;
 }
 
 .post-container, #new-post-form {

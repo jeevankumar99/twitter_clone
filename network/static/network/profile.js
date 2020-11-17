@@ -144,7 +144,7 @@ class ProfilePost extends React.Component {
         return (
             <div className="post-container">
                 <UserDiv username={this.props.postData.username}/>
-                <p>{this.props.postData.timestamp}</p>
+                <p className="post-timestamp">{this.props.postData.timestamp}</p>
                 {this.state.parentEditButton}
                 <div className="post-contents-div">
                     {this.state.content}
