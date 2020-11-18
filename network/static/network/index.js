@@ -1,9 +1,8 @@
 
 // publically declared to pass post_id to multiple functions when needed.
 let post_id = 0;
-
-const likeIcon = "https://www.clipartmax.com/png/middle/349-3495331_jewlr-instagram-like-icon-png.png";
-const emptyLikeIcon = "https://lh3.googleusercontent.com/proxy/Edd_dP5sNInJYWVjUdXSqMChwknIPIw-Os8R41EeJSeqLyDa-gSfZnFN2Q41ZqK3Gi6KxREbDWMTj58bWy9GAeemWIXweibx1mloPKnYdrHc0dVIDdgPh1Ip2XuOS7IKBMrTy5N2ULQlD227XNmY7-LN1pN-djV4BEwianAg_kPORk-4c0c7";
+const fullLikeIcon = "https://www.vectorico.com/download/emoticon/heart-icon.png"
+const emptyLikeIcon = "https://www.clipartmax.com/png/middle/358-3583360_e-3-hearts-hearts-like-icon-instagram-heart-icon-svg.png";
 
 class UserDiv extends React.Component {
     render () {
@@ -21,6 +20,7 @@ class Post extends React.Component {
         this.state = {
             likes: this.props.postData.likes,
             likeButtonState: this.props.postData.like_status,
+            likeButtonIcon: this.props.postData.like_icon,
             postType: 'post',
             content: <h4 id="post-content">{this.props.postData.content}</h4>,
             editButton: null,
@@ -30,23 +30,21 @@ class Post extends React.Component {
 
     // Update likes for each post
     updateLikes = (button) => {
-        console.log(button.target)
         if (this.state.likeButtonState === 'Like') {
             this.setState(state => ({
                 likes: state.likes + 1,
                 likeButtonState: 'Unlike',
+                likeButtonIcon: fullLikeIcon,
             }));
-            button.target.innerHTML = 'Unlike'
         }
         else {
             this.setState(state => ({
                 likes: state.likes - 1,
                 likeButtonState: 'Like',
+                likeButtonIcon: emptyLikeIcon,
             }));
-            button.target.innerHTML = 'Like';
         }
         fetch(`/update_likes/${this.props.postData.id}`)
-        button.target.innerHTML = this.state.likeButtonState
     }
 
     // Dynamically allows users to edit post
@@ -60,6 +58,7 @@ class Post extends React.Component {
        post_id = this.props.postData.id;
     }
 
+    // Start the grow animation to let the user edit the post.
     expandTextArea = () => {
         console.log('textarea clicked!')
         let editedContent = document.querySelector('#edited-content');
@@ -70,19 +69,34 @@ class Post extends React.Component {
 
     // Updates post's content without reloading the page.
     updatePost = () => {
-        console.log('update post executing!');
         let editedContent = document.querySelector('#edited-content');
-        editedContent.style.animationName = 'shrink';
         let newContent = editedContent.value;
         this.props.postData.content = newContent;
-        setTimeout(() => {
+
+        // If textarea is expanded, start shrink animation
+        if (editedContent.style.animationName === 'grow') {
+            editedContent.style.animationName = 'shrink';
+            setTimeout(() => {
+                this.setState(state => ({
+                    postType: 'post',
+                    content: <h4 id="post-content">{newContent}</h4>,
+                    editButton: null,
+                    parentEditButton: <button  onClick={button => this.editPost(button)} id='edit-button' style={{ display: this.props.postData.displayState}}>Edit</button>
+                }))
+            }, 2000);
+        }
+
+        // Else directly save the post without animation.
+        else {
             this.setState(state => ({
                 postType: 'post',
                 content: <h4 id="post-content">{newContent}</h4>,
                 editButton: null,
                 parentEditButton: <button  onClick={button => this.editPost(button)} id='edit-button' style={{ display: this.props.postData.displayState}}>Edit</button>
             }))
-        }, 2000);
+        }
+
+        // Update it in the Database.
         createNewPost('PUT');
     }
 
@@ -97,7 +111,7 @@ class Post extends React.Component {
                     {this.state.editButton}
                 </div>
                 <h5> This post has {this.state.likes} Likes.</h5>
-                <button onClick={button => this.updateLikes(button)} className="like-button">{this.state.likeButtonState}</button>
+                <img src={this.state.likeButtonIcon} onClick={button => this.updateLikes(button)} className="like-button"/>
             </div>
         )
     }
@@ -181,6 +195,12 @@ function loadPosts(filter=null, page=1) {
                 post.displayState = "block";
             }
             post.currentUser = user_id.innerHTML;
+            if (post.like_status === 'Unlike') {
+                post.like_icon = fullLikeIcon;
+            }
+            else {
+                post.like_icon = emptyLikeIcon;
+            }
             ReactDOM.render(<Post postData={post}/>, post_div);
             document.querySelector('#all-posts-container').appendChild(post_div);
             }

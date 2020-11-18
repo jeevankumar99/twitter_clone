@@ -164,8 +164,10 @@ def create_and_update_posts(request, post_id):
 
 def profile_page(request, username):
     user = User.objects.get(username=username)
+    date_joined = user.date_joined.strftime("%m/%d/%Y, %H:%M:%S")
     return render(request, "network/profile.html", {
         'username': user.username,
+        'date_joined': date_joined,
         'followers': None, #pass followers model
         'following': None,  #pass following model
     })

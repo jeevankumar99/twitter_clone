@@ -94,6 +94,14 @@ textarea:focus {
     width: 50px;
 }
 
+.like-button {
+    width: 30px;
+}
+
+.like-button:hover {
+    cursor: pointer;
+}
+
 #edit-button:hover {
     background-color: rgb(54, 170, 241);
     color: white;
@@ -103,9 +111,8 @@ textarea:focus {
     background-color: rgb(54, 170, 241);
 }
 
-#submit-new-post:focus, #post-close-button:focus, #follow-button:focus {
+#submit-new-post:focus, #edit-button:focus, #submit-edit-post:focus, #post-close-button:focus, #follow-button:focus {
     outline: none;
-    border: 0px;
 }
 
 
