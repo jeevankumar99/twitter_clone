@@ -207,6 +207,7 @@ textarea:focus {
 
 .post-timestamp {
     color: rgb(153, 153, 153);
+    margin: 6px 0px 6px 0px;
 }
 
 #profile-username, #followers-info {
@@ -215,21 +216,42 @@ textarea:focus {
 }
 
 .post-username {
-    width: 20%;
     display: inline;
-    background-color: rgb(139, 6, 6);
+    font-size: 24px;
+}
+
+.profile-username-text {
+    display: inline;
+    font-size: 28px;
 }
 
 .username-in-post {
     display: inline;
-    background-color: rgb(81, 81, 161);
-    width: 200px;
+}
+
+.user-profile-pic {
+    display: inline;
+    margin-right: 8px;
+}
+
+.user-profile-icon {
+    width: 55px;
 }
 
 
 #profile-username {
     border-bottom: 1px solid rgb(77, 82, 85);
     padding-top: 5px;
+}
+
+#profile-page-timestamp {
+    position: fixed;
+    top: 48px;
+    right: 52.5%;
+}
+
+#profile-page-user-icon {
+    width: 100px;
 }
 
 #side-panel-brand-name, #side-panel-username, #side-panel-all-posts, #side-panel-following, #side-panel-logout, #side-panel-login {
@@ -261,14 +283,13 @@ textarea:focus {
 }
 
 #user-posts {
-    margin-top: 130px;
+    margin-top: 140px;
 }
 
 .post-container, #new-post-form {
     color: white;
     width: 66%;
-    padding: 20px;
-    padding-bottom: 8px;
+    padding: 10px 20px 10px 20px;
     border-left: 1px solid rgb(56, 68, 77);
     border-right: 1px solid rgb(56, 68, 77);
     border-bottom: 1px solid rgb(56,68,77);
@@ -276,6 +297,7 @@ textarea:focus {
 
 .post-edit-div {
     display: inline;
+    margin-left: 74%;
 }
 
 #middle-panel {
@@ -289,10 +311,7 @@ textarea:focus {
     background-color: rgb(30, 42, 54);
 }
 
-.user-edit-div {
-    background-color: gray;
-    height: 100px;
-}
+
 
 
 

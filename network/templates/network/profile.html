@@ -15,8 +15,15 @@
     <div id="profile-middle-panel">
         <div id="profile-info">
             <div id="profile-username">
-                <h2>{{ username }}</h2>
-                <p class="post-timestamp">User joined on {{ date_joined }}</p>
+                <div class="user-profile-pic">
+                    <img id="profile-page-user-icon" class="user-profile-icon" src="{% static 'network/images/default-profile-icon.png' %}" />
+                </div>
+                <div class="profile-username-text">
+                    {{ username }}
+                </div>
+                <div id="profile-page-timestamp" class="post-timestamp">
+                    User joined on {{ date_joined }}
+                </div>
             </div>
             <div id="followers-info"></div>
         </div>

@@ -1,17 +1,10 @@
 
 // publically declared to pass post_id to multiple functions when needed.
 let post_id = 0;
-const fullLikeIcon = "/static/network/images/heart-icon.png";
+
 const emptyLikeIcon = "static/network/images/empty-heart-icon.png";
-class UserDiv extends React.Component {
-    render () {
-        return (
-            <div className="post-username">
-            <a className="username-in-post" href={"/profiles/" + this.props.username}> {this.props.username} Posted</a>
-            </div>
-        )
-    }
-}
+const fullLikeIcon = "/static/network/images/heart-icon.png";
+const userProfileIcon = "/static/network/images/default-profile-icon.png";
 
 class Post extends React.Component {
     constructor(props) {
@@ -103,12 +96,15 @@ class Post extends React.Component {
         return (
             <div className="post-container">
                 <div className="user-edit-div">
-                    <div className="username-in-post">
-                        <a href={"/profiles/" + this.props.postData.username}> {this.props.postData.username}</a>
+                    <div className="user-profile-pic">
+                        <img src={userProfileIcon} className="user-profile-icon"/>
+                    </div>
+                    <div className="post-username">
+                        <a href={"/profiles/" + this.props.postData.username}>{this.props.postData.username}</a>
                     </div>
                     <div className="post-edit-div">{this.state.parentEditButton}</div>
                 </div>
-                <p className="post-timestamp">{this.props.postData.timestamp}</p>
+                <div className="post-timestamp">Posted on {this.props.postData.timestamp}</div>
                 <div className="post-contents-div">
                     {this.state.content}
                     {this.state.editButton}
@@ -199,7 +195,7 @@ function loadPosts(filter=null, page=1) {
             const user_id = document.querySelector('#user-id');
             post.displayState= "none";
             if (post.username == user_id.innerHTML) {
-                post.displayState = "block";
+                post.displayState = "inline";
             }
             post.currentUser = user_id.innerHTML;
             if (post.like_status === 'Unlike') {

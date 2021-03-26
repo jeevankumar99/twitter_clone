@@ -1,6 +1,9 @@
 
-const fullLikeIcon = "https://www.vectorico.com/download/emoticon/heart-icon.png"
-const emptyLikeIcon = "https://www.clipartmax.com/png/middle/358-3583360_e-3-hearts-hearts-like-icon-instagram-heart-icon-svg.png";
+let post_id = 0;
+
+const emptyLikeIcon = "/static/network/images/empty-heart-icon.png";
+const fullLikeIcon = "/static/network/images/heart-icon.png";
+const userProfileIcon = "/static/network/images/default-profile-icon.png";
 
 class FollowerInfo extends React.Component {
     constructor(props) {
@@ -57,18 +60,6 @@ class FollowerInfo extends React.Component {
     }
 }
 
-let post_id = 0;
-
-class UserDiv extends React.Component {
-    render () {
-        return (
-            <div className="post-username">
-            <h5><a href={"/profiles/" + this.props.username}> {this.props.username} Posted</a></h5>
-            </div>
-        )
-    }
-}
-
 class ProfilePost extends React.Component {
     constructor(props) {
         super(props);
@@ -79,7 +70,7 @@ class ProfilePost extends React.Component {
             postType: 'post',
             content: <h4 id="post-content">{this.props.postData.content}</h4>,
             editButton: null,
-            parentEditButton: <button  onClick={button => this.editPost(button)} id='edit-button' style={{ display: this.props.postData.displayState}}>Edit</button>,
+            parentEditButton: <button  onClick={button => this.editPost(button)} className='edit-button' style={{ display: this.props.postData.displayState}}>Edit</button>,
         }
     }; 
     
@@ -136,7 +127,7 @@ class ProfilePost extends React.Component {
                     postType: 'post',
                     content: <h4 id="post-content">{newContent}</h4>,
                     editButton: null,
-                    parentEditButton: <button  onClick={button => this.editPost(button)} id='edit-button' style={{ display: this.props.postData.displayState}}>Edit</button>
+                    parentEditButton: <button  onClick={button => this.editPost(button)} className='edit-button' style={{ display: this.props.postData.displayState}}>Edit</button>
                 }))
             }, 2000);
         }
@@ -159,16 +150,27 @@ class ProfilePost extends React.Component {
     render () {
         return (
             <div className="post-container">
-                <UserDiv username={this.props.postData.username}/>
-                <p className="post-timestamp">{this.props.postData.timestamp}</p>
-                {this.state.parentEditButton}
-                <div className="post-contents-div">
-                    {this.state.content}
-                    {this.state.editButton}
+            <div className="user-edit-div">
+                <div className="user-profile-pic">
+                    <img src={userProfileIcon} className="user-profile-icon"/>
                 </div>
-                <h5> This post has {this.state.likes} Likes.</h5>
-                <img src={this.state.likeButtonIcon} onClick={button => this.updateLikes(button)} className="like-button"/>
+                <div className="post-username">
+                    <a href={"/profiles/" + this.props.postData.username}>{this.props.postData.username}</a>
+                </div>
+                <div className="post-edit-div">{this.state.parentEditButton}</div>
             </div>
+            <div className="post-timestamp">Posted on {this.props.postData.timestamp}</div>
+            <div className="post-contents-div">
+                {this.state.content}
+                {this.state.editButton}
+            </div>
+            <div className="like-info-div"> 
+                <div className="like-count">{this.state.likes}</div>
+                <div className="like-button-div">
+                    <img src={this.state.likeButtonIcon} onClick={button => this.updateLikes(button)} className="like-button"/>
+                </div>
+            </div>
+        </div>
         )
     }
 }
@@ -220,7 +222,7 @@ function loadUserPosts(page=1) {
             const user_id = document.querySelector('#user-id');
             post.displayState= "none";
             if (post.username == user_id.innerHTML) {
-                post.displayState = "block";
+                post.displayState = "inline";
             }
             post.currentUser = user_id.innerHTML;
             if (post.like_status === 'Unlike') {
